@@ -250,10 +250,12 @@ def define_G(opt):
     # ----------------------------------------
     # others
     # ----------------------------------------
-    # TODO
+    # ----------------------------------------
+    # SFNet
+    # ----------------------------------------
     elif net_type == 'sfnet':
         from models.sfnet import SFNet as net
-        netG = net.build_net(mode=opt_net['mode'])
+        netG = net.build_net()
 
     else:
         raise NotImplementedError('netG [{:s}] is not found.'.format(net_type))

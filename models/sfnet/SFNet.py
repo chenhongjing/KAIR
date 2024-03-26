@@ -5,11 +5,11 @@ from .layers import *
 
 # Encoder Block
 class EBlock(nn.Module):
-    def __init__(self, out_channel, num_res, mode):
+    def __init__(self, out_channel, num_res):
         super(EBlock, self).__init__()
 
-        layers = [ResBlock(out_channel, out_channel, mode) for _ in range(num_res-1)]
-        layers.append(ResBlock(out_channel, out_channel, mode, filter=True))
+        layers = [ResBlock(out_channel, out_channel) for _ in range(num_res-1)]
+        layers.append(ResBlock(out_channel, out_channel, filter=True))
 
         self.layers = nn.Sequential(*layers)
 
@@ -18,11 +18,11 @@ class EBlock(nn.Module):
 
 # Decoder Block
 class DBlock(nn.Module):
-    def __init__(self, channel, num_res, mode):
+    def __init__(self, channel, num_res):
         super(DBlock, self).__init__()
 
-        layers = [ResBlock(channel, channel, mode) for _ in range(num_res-1)]
-        layers.append(ResBlock(channel, channel, mode, filter=True))
+        layers = [ResBlock(channel, channel) for _ in range(num_res-1)]
+        layers.append(ResBlock(channel, channel, filter=True))
         self.layers = nn.Sequential(*layers)
 
     def forward(self, x):
@@ -55,15 +55,15 @@ class FAM(nn.Module):
         return self.merge(torch.cat([x1, x2], dim=1))
 
 class SFNet(nn.Module):
-    def __init__(self, mode, num_res=16):
+    def __init__(self, num_res=16):
         super(SFNet, self).__init__()
 
         base_channel = 32
 
         self.Encoder = nn.ModuleList([
-            EBlock(base_channel, num_res, mode),
-            EBlock(base_channel*2, num_res, mode),
-            EBlock(base_channel*4, num_res, mode),
+            EBlock(base_channel, num_res),
+            EBlock(base_channel*2, num_res),
+            EBlock(base_channel*4, num_res),
         ])
 
         self.feat_extract = nn.ModuleList([
@@ -76,9 +76,9 @@ class SFNet(nn.Module):
         ])
 
         self.Decoder = nn.ModuleList([
-            DBlock(base_channel * 4, num_res, mode),
-            DBlock(base_channel * 2, num_res, mode),
-            DBlock(base_channel, num_res, mode)
+            DBlock(base_channel * 4, num_res),
+            DBlock(base_channel * 2, num_res),
+            DBlock(base_channel, num_res)
         ])
 
         self.Convs = nn.ModuleList([
@@ -141,5 +141,5 @@ class SFNet(nn.Module):
 
 
 
-def build_net(mode):
-    return SFNet(mode)
+def build_net():
+    return SFNet()
